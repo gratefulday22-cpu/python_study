@@ -81,3 +81,126 @@ print("{0:^<+30,}".format(100000000))
 print("{0}".format(5/3))
 print("{0:f}".format(5/3)) # 소수점 아래 6자리까지만 표시 : 콜론 뒤에 f
 print("{0:.2f}".format(5/3)) # 소수점 아래 n자리까지만 표시 : 콜론 뒤에 .nf
+
+## % 파일 입출력
+# 쓰기 모드
+score_file = open("score.txt","w",encoding="utf8")
+print("수학 : 0", file=score_file)
+print("영어 : 50", file = score_file)
+score_file.close()
+
+# 이어 쓰기 모드
+score_file = open("score.txt", "a", encoding="utf8")
+score_file.write("과학 : 80\n" )
+score_file.write("코딩 : 100\n" )
+score_file.close()
+
+#읽기 모드 
+score_file = open("score.txt", "r", encoding="utf8")
+print(score_file.read()) # 파일 전체 읽어 와서 터미널에 출력
+score_file.close()
+
+# 한 줄씩 읽기 : readline() 함수 사용 + while문과 함께
+score_file = open("score.txt", "r", encoding="utf8")
+print(score_file.readline(), end="")
+print(score_file.readline(), end="")
+print(score_file.readline(), end="")
+print(score_file.readline(), end="")
+score_file.close()
+
+score_file = open("score.txt", "r", encoding="utf8")
+while True:
+    line = score_file.readline() #score_file에서 한 줄씩 읽어온 값을 line 변수로 정의 
+    if not line: # 더 이상 읽어 올 내용이 없을 때
+        break # 탈출하세요
+    print (line, end="")
+
+score_file.close()
+
+# 한꺼번에 파일 불러와서 리스트에 저장하고, 한 줄씩 출력 + for문과 함께
+score_file = open("score.txt", "r", encoding="utf8")
+lines = score_file.readlines() #score_file에서 한 줄씩 읽어온 값을 lines 라는 리스트에 저장 
+for line in lines:
+    print(line, end="")
+
+score_file.close()
+
+
+# 데이터를 파일에 저장하기 : pickle 모듈
+import pickle 
+profile_file = open("profile.pickle", "wb") # 파일 열기 (바이너리 형태, 쓰기 모드)
+profile = {"이름":"스누피", "나이":30, "취미":["축구","골프","코딩"]} # 변수 딕셔너리로 정의 
+print(profile)
+
+pickle.dump(profile, profile_file) #dump함수로 파일 저장하기 (pickle모듈에 있는 dump 함수 실행, 변수명 -> 파일명에 저장)
+profile_file.close() # 파일 닫기 
+
+# 파일 불러오기
+
+import pickle
+profile_file = open("profile.pickle","wb") #변수 profile_file 에 profile.pickle이라는 파일을 열고, 열린 그 객체를 저장
+profile = {"이름":"스누피", "나이":30, "취미":["축구","골프","코딩"]} # 변수 profile에 딕셔너리 데이터 저장
+print(profile)
+
+pickle.dump(profile, profile_file) #pickle모듈의 dump함수 이용해서, profile 변수의 데이터(딕셔너리)를 profile_file 변수(파일)에 저장
+profile_file.close() # 파일 닫기
+
+profile_file = open("profile.pickle","rb")
+profile = pickle.load(profile_file)
+
+print(profile)
+profile_file.close()
+
+# 파일 한 번에 열고 닫기 : with 문
+## 참고 : 파이썬 객체를 저장 가능한 바이트 형태로 바꾸고, 나중에 다시 원래 파이썬 객체로 복원하는 기능을 모아둔 모듈
+#음식을 피클로 만들어 보존해두었다가 나중에 먹는 것처럼, Python 객체를 pickle해서 보존해두었다가 나중에 다시 꺼내 쓴다.
+
+
+import pickle #pickle이라는 모듈 자체를 모두 가져옴 cf) from 모듈명 import * (또는 함수명) 써도 됨
+
+with open("profile.pickle", "rb") as profile_file:
+    print(pickle.load(profile_file)) #사용 시 모듈명.함수()로 사용
+
+import pickle
+with open("study.txt", "w", encoding="utf8") as study_file: #study.txt 라는 파일을, 쓰기 모드로 열어서 study_file 이라는 변수에 저장
+    study_file.write("파이썬을 열심히 공부하고 있어요.") #study_file이라는 변수에 write 기능 실행. (파일에 저 문자열이 쓰여짐)
+
+with open("study.txt","r",encoding="utf8") as study_file: # #study.txt 라는 파일을, 읽기 모드로 열어서 study_file 이라는 변수에 저장
+    print(study_file.read()) #study_file이라는 변수에 read 기능 실행 (읽어오기)
+
+ ## 실습 문제 : 보고서 파일 만들기
+for week in range(1,51):
+    weekly_file = open("{}주차.txt".format(week), "w", encoding="utf8") #파일명 이후에 계속 사용해야 하므로 변수에 담음
+    print("-{}주차 주간보고-".format(week), file=weekly_file)
+    print("부서 : ", file=weekly_file)
+    print("이름 : ", file=weekly_file)
+    print("업무 요약 : ", file=weekly_file)
+
+    weekly_file.close()
+
+# 모범답안 : with문 활용
+for i in range(1,51):
+    with opne(stt(i) + "주차.txt", "w", encoding="utf8") as report_file:
+    report_file.write("-{}주차 주간보고-".format(i))
+    report_file.write("\n부서: ")
+    report_file.write("\n 이름: ")
+    report_file.write("\n 업무: ")
+
+# 셀프체크
+
+class_file = open("class.txt", "w", encoding="utf8")
+print("초록반 5세 20명 파랑반 6세 18명 노랑반 7세 22명", file= class_file)
+
+class_file = open("class.txt", "r", encoding="utf8")
+print(class_file.read())
+class_file.close()
+
+# 모범답안
+with open("class.txt", "r", encoding="utf8") as f: # class.txt 라는 이름의 파일 읽기 모드로 열어서 f라는 변수에 저장
+    txt = f.read() # 파일 전체 읽어 와서 txt라는 변수에 저장
+    words = txt.split() #파일을 빈칸으로 구분
+
+for word in words:
+    print(word, end="")
+    if word.endswith("명"):
+        print()
